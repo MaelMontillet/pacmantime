@@ -1,0 +1,39 @@
+h1{
+	text-align: center;
+	background-color: red;
+}
+.image1{
+display: block;
+margin: auto;
+vertical-align:center;
+width:450px;
+height:200px;
+}
+body {
+color:black;
+background-color:#0F0F0F; 
+}
+p{
+	font-family: Verdana;
+	color:yellow;;
+}
+#pacman {
+ color:#FF0000;
+ font-family: Bodoni MT;
+ font-size: 17px;
+}
+#fantomes {
+ color:#01DF01;
+ font-size: 17px;
+}
+a {
+ display:block;
+ text-align:center;
+ font-size: 25px;
+ color:#EDFF0C;
+}
+#b {
+   background-image: url(dab1.jpg); 
+ }
+
+
