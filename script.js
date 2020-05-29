@@ -12,8 +12,8 @@ function obst(x,y,l,h,ca){
 function can() {
 	var canvas  = document.querySelector('#canvas');
 	var context = canvas.getContext('2d');
-	canvas.width=(screen.width/( (screen.width/80)*3) )*24;
-	canvas.height=(screen.height/( (screen.height/80)*3) )*18;
+	canvas.width=(screen.width/( 16*2.5) )*24;
+	canvas.height=(screen.height/( 9*2.5) )*18;
 	obst(0,0,60,1,canvas);
 	obst(0,0,1,45,canvas);
 	obst(59,0,1,45,canvas);

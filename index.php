@@ -16,21 +16,25 @@ catch (Exception $e)
         <title>Login Pac Man Time</title>
         <meta charset="utf-8" />
 		<script src="script.js"></script>
+		<link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
 	<?php
 	#21 mai tout le systeme de connexion
 		if (isset($_SESSION['pseudo']))
 		{
-			echo '<form action="index.php" method="post">
+			echo '
+			<div>
+			<canvas id="canvas" width="1500" height="900" onload="can()">
+				<p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
+			</canvas>
+			</div>
+			<script> window.onload=can(); </script>
+			<form action="index.php" method="post">
 				<p>
 					<input type="submit" name="deconexion" value="Deconexion" />
 				</p>
 			</form>
-			<canvas id="canvas" width="1500" height="900" onload="can()">
-				<p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
-			</canvas>
-			<script> window.onload=can(); </script>
 			';
 			if (isset($_POST['deconexion']))
 			{
