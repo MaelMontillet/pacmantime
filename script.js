@@ -1,3 +1,4 @@
+
 //27mai ( début can() et obst())
 function obst(x,y,l,h,ca){
 	var co = ca.getContext('2d');
@@ -156,9 +157,10 @@ function can() {
 	canvas.height=(screen.height/( 9*2.5) )*18;
 	var cx=canvas.width/48;
 	var cy=canvas.height/36;
-	var x=cx+1;
-	var y=cy+1;
+	x=cx+1;
+	y=cy+1;
 	var l = map(canvas);
+	
 	function draw(x,y,canvas,k,l){
 		var co = canvas.getContext('2d');
 		var cx=canvas.width/48;
@@ -191,9 +193,10 @@ function can() {
 				case 83:
 					fk="s";
 					break;
-					
-					
+			
 			}
+					
+			
 		});
 		switch (fk){
 			case "q":
@@ -221,8 +224,37 @@ function can() {
 		y=deplacement(x,y,canvas,k,l)[1];
 		co.fillStyle = "blue";
 		co.fillRect(x,y,cx*2,cy*2);
+		jQuery(document).ready(function(){
+			$.post(
+			'positions.php', 
+			{
+				pseudo : document.getElementById("pseudo").textContent,
+				positionx: (x-1)/cx,
+				positiony: (y-1)/cy
+			},
+			affichage, 
+			'text' 
+			);
+
+			
+
+		});
+		function affichage(retour){
+			otherusers= new Array();
+			otherusers=retour.split(' ');
+			otherusers[0]=otherusers[0][2];
+			otherusers=otherusers.splice(0,otherusers.length-1);
+		}
+		
+		for (var ii=0 ; ii < otherusers.length; ii+=3){
+			co.fillStyle = "blue";
+			co.fillRect(otherusers[ii+1]*cx,otherusers[ii+2]*cy,cx*2,cy*2);
+		}
 		window.requestAnimationFrame(function() { draw(x,y,canvas,k,l) });
 
 	}
 	draw(x,y,canvas,k,l)
+	
 	}
+var otherusers=new Array();
+can()

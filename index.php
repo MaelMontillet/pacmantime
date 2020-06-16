@@ -15,8 +15,8 @@ catch (Exception $e)
     <head>
         <title>Login Pac Man Time</title>
         <meta charset="utf-8" />
-		<script src="script.js"></script>
 		<link rel="stylesheet" type="text/css" href="style.css">
+		
     </head>
     <body>
 	<?php
@@ -24,22 +24,30 @@ catch (Exception $e)
 		if (isset($_SESSION['pseudo']))
 		{
 			echo '
-			<div>
-			<canvas id="canvas" width="1500" height="900" onload="can()">
-				<p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
-			</canvas>
+			<div id="conteneur">
+				<p id="pseudo">';  echo $_SESSION ['pseudo']; echo '</p>
+				<div>
+					<canvas id="canvas" width="1500" height="900" onload="can()">
+						<p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
+					</canvas>
+					
+				</div>
+				<div>
+					<form action="index.php" method="post">
+							<p>
+							<input type="submit" name="deconexion" value="Deconexion" />
+						</p>
+					</form>
+				</div>
 			</div>
-			<script> window.onload=can(); </script>
-			<form action="index.php" method="post">
-				<p>
-					<input type="submit" name="deconexion" value="Deconexion" />
-				</p>
-			</form>
 			';
 			if (isset($_POST['deconexion']))
 			{
 				session_destroy();
 				header("Refresh:0");
+				$set = $bdd->prepare('UPDATE users SET statut = 0 WHERE pseudo=:pseudo');
+				$set->execute(array('pseudo' => $_SESSION['pseudo']));
+				$set->closeCursor();
 			}
 			
 		}
@@ -96,12 +104,25 @@ catch (Exception $e)
 					else
 					{
 						$req = $bdd->prepare('SELECT * FROM users WHERE pseudo=:pseudo AND mdp=:mdp');
-						$req->execute(array('pseudo' => $_POST['pseudo'],'mdp' => $_POST['mdp'],));
+						$req->execute(array('pseudo' => $_POST['pseudo'],'mdp' => $_POST['mdp']));
 						if ($req->fetch())
-						{
-							$_SESSION['pseudo']=$_POST['pseudo'];
+						{	
 							$req->closeCursor();
-							header("Refresh:0");
+							$test = $bdd->prepare('SELECT statut FROM users WHERE pseudo=:pseudo');
+							$test->execute(array('pseudo' => $_POST['pseudo']));
+							$statut=$test->fetch();
+							if ($statut['statut']==0){
+								$test->closeCursor();
+								$set = $bdd->prepare('UPDATE users SET statut = 1 WHERE pseudo=:pseudo');
+								$set->execute(array('pseudo' => $_POST['pseudo']));
+								$set->closeCursor();
+								$_SESSION['pseudo']=$_POST['pseudo'];
+								header("Refresh:0");
+							}
+							else {
+								echo 'Statut';
+								$test->closeCursor();
+							}
 						}
 						else
 						{
@@ -114,5 +135,7 @@ catch (Exception $e)
 		}
 		
 	?>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="script.js"></script>
     </body>
 </html>
