@@ -222,6 +222,23 @@ function can() {
 		}
 		x=deplacement(x,y,canvas,k,l)[0];
 		y=deplacement(x,y,canvas,k,l)[1];
+		if (x>canvas.width){
+			x=-cx+1;
+			y=26*cy+1;
+		}
+		else if (x<-cx){
+			x=47*cx+1;
+			y=9*cy+1;
+		}
+		else if (y>canvas.height){
+			x=37*cx+1;
+			y=-cy+1;
+		}
+		else if (y<-cy){
+			x=9*cx+1;
+			y=35*cy+1;
+		}
+			
 		co.fillStyle = "blue";
 		co.fillRect(x,y,cx*2,cy*2);
 		jQuery(document).ready(function(){
@@ -245,10 +262,15 @@ function can() {
 			otherusers[0]=otherusers[0][2];
 			otherusers=otherusers.splice(0,otherusers.length-1);
 		}
-		
-		for (var ii=0 ; ii < otherusers.length; ii+=3){
-			co.fillStyle = "blue";
-			co.fillRect(otherusers[ii+1]*cx,otherusers[ii+2]*cy,cx*2,cy*2);
+		console.log(otherusers);
+		for (var ii=0 ; ii < otherusers.length; ii+=4){
+			if (otherusers[ii+1] != document.getElementById("pseudo").textContent){
+				co.fillStyle = "blue";
+				co.fillRect(otherusers[ii+2]*cx,otherusers[ii+3]*cy,cx*2,cy*2);
+				co.fillStyle = "black";
+				co.font = 'bold 12px Verdana, Arial, serif';
+				co.fillText(otherusers[ii+1],otherusers[ii+2]*cx,otherusers[ii+3]*cy)
+			}
 		}
 		window.requestAnimationFrame(function() { draw(x,y,canvas,k,l) });
 

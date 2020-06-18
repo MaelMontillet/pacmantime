@@ -22,12 +22,13 @@ if ( isset($_POST['positionx']) && isset($_POST['positiony']) && isset(($_POST['
 	$req = $bdd->query('SELECT positionx, positiony, pseudo  FROM users WHERE statut=1');
 	while ($reponse = $req->fetch()){
 		$result[] =  'P';
+		$result[]= 	$reponse['pseudo'];
 		$result[] = $reponse['positionx'];
 		$result[] = $reponse['positiony'];
 	}
-	for ($i=0; $i<count($result); $i+=3)
+	for ($i=0; $i<count($result); $i+=4)
 	{
-		echo $result[$i] . ' ' . $result[$i+1] . ' ' . $result[$i+2]. ' ';
+		echo $result[$i] . ' ' . $result[$i+1] . ' ' . $result[$i+2]. ' ' .$result[$i+3] . ' ';
 	}
 	$req->closeCursor();
 	}
