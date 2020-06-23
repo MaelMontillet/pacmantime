@@ -14,7 +14,7 @@ function refresh(ca){
 	var co = ca.getContext('2d');
 	co.clearRect(0,0,ca.width,ca.height);
 }
-function deplacement(x,y,ca,k,l){
+function deplacement(x,y,ca,k,l){ 
 	var cx=ca.width/48;
 	var cy=ca.height/36;
 	var a = 0
@@ -22,10 +22,9 @@ function deplacement(x,y,ca,k,l){
 	switch (k){
 		case "q":
 			for (var i = 0; i < l.length ; i+=4) {
-				for (var vy = 0; vy<2*cy ; vy+=cy/10){
-					if ((l[i] < x-2) && (x-2<l[i+1]) && (l[i+2] < y+vy) && (y+vy < l[i+3] )){
+				for (var vy = cy/16; vy <2*cy ; vy+=cy/16){
+					if ((l[i] <= x) && (x <= l[i+1]) && (l[i+2] <= y+vy) && (y+vy <= l[i+3] )){
 						a=1;
-						
 					}
 				}
 			}
@@ -37,8 +36,8 @@ function deplacement(x,y,ca,k,l){
 			
 		case "z":
 			for (var i = 0; i < l.length ; i+=4) {
-				for (var vx = 0; vx<2*cx ; vx+=cx/10){
-					if ((l[i] < x+vx) && (x+vx<l[i+1]) && (l[i+2] < y-2) && (y-2 < l[i+3] )){
+				for (var vx = cx/16; vx<2*cx ; vx+=cx/16){
+					if ((l[i] <= x+vx) && (x+vx<=l[i+1]) && (l[i+2] <= y) && (y <= l[i+3] )){
 						a=1;
 					}
 					
@@ -50,10 +49,11 @@ function deplacement(x,y,ca,k,l){
 			break;
 		
 		case "d":
+		at=new Array()
 			for (var i = 0; i < l.length ; i+=4) {
-				for (var vy = 0; vy<2*cy ; vy+=cy/10){
-					if ((l[i] < x+2*cx) && (x+2*cx<l[i+1]) && (l[i+2] < y+vy) && (y+vy < l[i+3] )){
-						a=1;						
+				for (var vy = cy/16; vy<2*cy ; vy+=cy/16){
+					if ((l[i] <= x+2*cx) && (x+2*cx<=l[i+1]) && (l[i+2] <= y+vy) && (y+vy <= l[i+3] )){
+						a=1;
 					}
 				}
 			}
@@ -63,8 +63,8 @@ function deplacement(x,y,ca,k,l){
 			break;
 		case "s":
 			for (var i = 0; i < l.length ; i+=4) {
-				for (var vx = 0; vx<2*cx ; vx+=cx/10){
-					if ((l[i] < x+vx) && (x+vx<l[i+1]) && (l[i+2] < y+2*cy) && (y+2*cy < l[i+3] )){
+				for (var vx = cx/16; vx<2*cx ; vx+=cx/16){
+					if ((l[i] <= x+vx) && (x+vx<=l[i+1]) && (l[i+2] <= y+2*cy) && (y+2*cy <= l[i+3] )){
 						a=1;
 					}
 				}
@@ -149,16 +149,17 @@ function map(canvas){
 	return liste_obst
 }
 function can() {
-	var k="s";
-	var fk="s"
+	var k="d";
+	var fk="d"
 	var canvas  = document.querySelector('#canvas');
 	var context = canvas.getContext('2d');
 	canvas.width=(screen.width/( 16*2.5) )*24;
 	canvas.height=(screen.height/( 9*2.5) )*18;
 	var cx=canvas.width/48;
 	var cy=canvas.height/36;
-	x=cx+1;
-	y=cy+1;
+	x=cx;
+	y=cy;
+	
 	var l = map(canvas);
 	
 	function draw(x,y,canvas,k,l){
@@ -167,6 +168,30 @@ function can() {
 		var cy=canvas.height/36;
 		refresh(canvas);
 		map(canvas);
+		if (document.getElementById("mobile").checked){
+			window.addEventListener("deviceorientation", function handleOrientation(event){
+				var axey= event.beta;
+				var axex= event.gamma;
+			if (axex>5){
+				fk="z";
+			}
+			else if (axex<-40){
+				fk="s";
+			}
+			else if (axey>15){
+				fk="d";
+			}
+			else if (axey<-15){
+				fk="q";
+			}
+			/*at=new Array(axex,axey,fk);
+			document.getElementById("test").innerText=at;*/
+			ay=event.beta;
+			ax=event.gamma;
+			}, true);
+			
+		}
+		else {
 		document.addEventListener('keydown', function(e) {
 			switch (e.keyCode){
 				case 37:
@@ -198,24 +223,26 @@ function can() {
 					
 			
 		});
+		}
+		
 		switch (fk){
 			case "q":
-				if (((x-1)%cx==0) && ((y-1)%cy==0)){
+				if (((x)%cx==0) && ((y)%cy==0)){
 					k="q";
 				}
 				break;
 			case "z":
-				if (((x-1)%cx==0) && ((y-1)%cy==0)){
+				if (((x)%cx==0) && ((y)%cy==0)){
 					k="z";
 				}
 				break;
 			case "d":
-				if (((x-1)%cx==0) && ((y-1)%cy==0)){
+				if (((x)%cx==0) && ((y)%cy==0)){
 					k="d";
 				}
 				break;
 			case "s":
-				if (((x-1)%cx==0) && ((y-1)%cy==0)){
+				if (((x)%cx==0) && ((y)%cy==0)){
 					k="s";
 				}
 				break;
@@ -238,16 +265,17 @@ function can() {
 			x=9*cx+1;
 			y=35*cy+1;
 		}
-			
 		co.fillStyle = "blue";
-		co.fillRect(x,y,cx*2,cy*2);
+		co.beginPath();
+		co.arc(x+cx, y+cy, cx, 0, Math.PI * 2, true); 
+		co.fill();
 		jQuery(document).ready(function(){
 			$.post(
 			'positions.php', 
 			{
 				pseudo : document.getElementById("pseudo").textContent,
-				positionx: (x-1)/cx,
-				positiony: (y-1)/cy
+				positionx: x/cx,
+				positiony: y/cy
 			},
 			affichage, 
 			'text' 
@@ -262,16 +290,18 @@ function can() {
 			otherusers[0]=otherusers[0][2];
 			otherusers=otherusers.splice(0,otherusers.length-1);
 		}
-		console.log(otherusers);
 		for (var ii=0 ; ii < otherusers.length; ii+=4){
 			if (otherusers[ii+1] != document.getElementById("pseudo").textContent){
 				co.fillStyle = "blue";
-				co.fillRect(otherusers[ii+2]*cx,otherusers[ii+3]*cy,cx*2,cy*2);
+				co.beginPath();
+				co.arc(otherusers[ii+2]*cx+cx, otherusers[ii+3]*cy+cy, cx, 0, Math.PI * 2, true); 
+				co.fill();
 				co.fillStyle = "black";
 				co.font = 'bold 12px Verdana, Arial, serif';
 				co.fillText(otherusers[ii+1],otherusers[ii+2]*cx,otherusers[ii+3]*cy)
 			}
 		}
+		
 		window.requestAnimationFrame(function() { draw(x,y,canvas,k,l) });
 
 	}
@@ -279,4 +309,4 @@ function can() {
 	
 	}
 var otherusers=new Array();
-can()
+can();
