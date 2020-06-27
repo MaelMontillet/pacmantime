@@ -181,9 +181,6 @@ function can() {
 	var resx=ds[0];
 	var resy=ds[1];
 	var doc = document, w = window;
-	alert(doc.clientWidth);
-	alert();
-	
 	var i=0
 		while (( screen.width/(resx*ds[2][i])*48 < window.innerWidth ) && ( screen.height/(resy*ds[2][i])*36 < window.innerHeight) &&  (ds[2][i]!=length-1)){
 			i+=1
