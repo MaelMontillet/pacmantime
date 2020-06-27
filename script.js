@@ -2,7 +2,7 @@
 //27mai ( début can() et obst())
 function obst(x,y,l,h,ca){
 	var co = ca.getContext('2d');
-	co.fillStyle = "gold";
+	co.fillStyle = "blue";
 	var cl=ca.width/48;
 	var ch=ca.height/36;
 	var li = new Array(x*cl,x*cl+l*cl,y*ch,y*ch+h*ch);
@@ -22,7 +22,7 @@ function deplacement(x,y,ca,k,l){
 	switch (k){
 		case "q":
 			for (var i = 0; i < l.length ; i+=4) {
-				for (var vy = cy/16; vy <2*cy ; vy+=cy/16){
+				for (var vy = cy/8; vy <2*cy ; vy+=cy/8){
 					if ((l[i] <= x) && (x <= l[i+1]) && (l[i+2] <= y+vy) && (y+vy <= l[i+3] )){
 						a=1;
 					}
@@ -36,7 +36,7 @@ function deplacement(x,y,ca,k,l){
 			
 		case "z":
 			for (var i = 0; i < l.length ; i+=4) {
-				for (var vx = cx/16; vx<2*cx ; vx+=cx/16){
+				for (var vx = cx/8; vx<2*cx ; vx+=cx/8){
 					if ((l[i] <= x+vx) && (x+vx<=l[i+1]) && (l[i+2] <= y) && (y <= l[i+3] )){
 						a=1;
 					}
@@ -51,7 +51,7 @@ function deplacement(x,y,ca,k,l){
 		case "d":
 		at=new Array()
 			for (var i = 0; i < l.length ; i+=4) {
-				for (var vy = cy/16; vy<2*cy ; vy+=cy/16){
+				for (var vy = cy/8; vy<2*cy ; vy+=cy/8){
 					if ((l[i] <= x+2*cx) && (x+2*cx<=l[i+1]) && (l[i+2] <= y+vy) && (y+vy <= l[i+3] )){
 						a=1;
 					}
@@ -63,7 +63,7 @@ function deplacement(x,y,ca,k,l){
 			break;
 		case "s":
 			for (var i = 0; i < l.length ; i+=4) {
-				for (var vx = cx/16; vx<2*cx ; vx+=cx/16){
+				for (var vx = cx/8; vx<2*cx ; vx+=cx/8){
 					if ((l[i] <= x+vx) && (x+vx<=l[i+1]) && (l[i+2] <= y+2*cy) && (y+2*cy <= l[i+3] )){
 						a=1;
 					}
@@ -148,20 +148,71 @@ function map(canvas){
 	liste_obst=liste_obst.concat(obst(45,33,2,2,canvas));
 	return liste_obst
 }
+
+function def_screen(scx,scy){
+	if (scx>scy){
+		var max = scx;
+	}
+	else{
+		var max = scy;
+	}
+	var res1 = scx;
+	var res2 = scy;
+	var ldiv = new Array();
+	for (var i=max; i > 0; i-=1){
+		
+		if ((res1%i==0) && (res2%i==0)){
+			res1/=i;
+			res2/=i;
+		}
+		if ((scx%i==0) && (scy%i==0)){
+			ldiv.push(i);
+		}
+	}
+	result=new Array(res1,res2,ldiv);
+	return result;
+}
 function can() {
 	var k="d";
 	var fk="d"
 	var canvas  = document.querySelector('#canvas');
 	var context = canvas.getContext('2d');
-	canvas.width=(screen.width/( 16*2.5) )*24;
-	canvas.height=(screen.height/( 9*2.5) )*18;
+	var ds=def_screen(screen.width,screen.height)
+	var resx=ds[0];
+	var resy=ds[1];
+	var doc = document, w = window;
+	alert(doc.clientWidth);
+	alert();
+	
+	var i=0
+		while (( screen.width/(resx*ds[2][i])*48 < window.innerWidth ) && ( screen.height/(resy*ds[2][i])*36 < window.innerHeight) &&  (ds[2][i]!=length-1)){
+			i+=1
+		}
+	if (resx<resy){
+		if (i==0){
+			canvas.width=screen.height/(resx*ds[2][i])*36;
+			canvas.height=screen.width/(resy*ds[2][i])*48;
+		}
+		else{
+			canvas.width=screen.height/(resx*ds[2][i-1])*36;
+			canvas.height=screen.width/(resy*ds[2][i-1])*48;
+		}
+	}
+	else {
+		if (i==0){
+			canvas.width=screen.width/(resx*ds[2][i])*48;
+			canvas.height=screen.height/(resy*ds[2][i])*36;
+		}
+		else{
+			canvas.width=screen.width/(resx*ds[2][i-1])*48;
+			canvas.height=screen.height/(resy*ds[2][i-1])*36;
+		}
+	}
 	var cx=canvas.width/48;
 	var cy=canvas.height/36;
 	x=cx;
 	y=cy;
-	
 	var l = map(canvas);
-	
 	function draw(x,y,canvas,k,l){
 		var co = canvas.getContext('2d');
 		var cx=canvas.width/48;
@@ -172,20 +223,18 @@ function can() {
 			window.addEventListener("deviceorientation", function handleOrientation(event){
 				var axey= event.beta;
 				var axex= event.gamma;
-			if (axex>5){
+			if (axex > -20){
 				fk="z";
 			}
-			else if (axex<-40){
+			else if (axex<-35){
 				fk="s";
 			}
-			else if (axey>15){
+			else if (axey>10){
 				fk="d";
 			}
-			else if (axey<-15){
+			else if (axey<-10){
 				fk="q";
 			}
-			/*at=new Array(axex,axey,fk);
-			document.getElementById("test").innerText=at;*/
 			ay=event.beta;
 			ax=event.gamma;
 			}, true);
@@ -250,22 +299,22 @@ function can() {
 		x=deplacement(x,y,canvas,k,l)[0];
 		y=deplacement(x,y,canvas,k,l)[1];
 		if (x>canvas.width){
-			x=-cx+1;
-			y=26*cy+1;
+			x=-cx;
+			y=26*cy;
 		}
 		else if (x<-cx){
-			x=47*cx+1;
-			y=9*cy+1;
+			x=47*cx;
+			y=9*cy;
 		}
 		else if (y>canvas.height){
-			x=37*cx+1;
-			y=-cy+1;
+			x=37*cx;
+			y=-cy;
 		}
 		else if (y<-cy){
-			x=9*cx+1;
-			y=35*cy+1;
+			x=9*cx;
+			y=35*cy;
 		}
-		co.fillStyle = "blue";
+		co.fillStyle = "gold";
 		co.beginPath();
 		co.arc(x+cx, y+cy, cx, 0, Math.PI * 2, true); 
 		co.fill();
@@ -292,7 +341,7 @@ function can() {
 		}
 		for (var ii=0 ; ii < otherusers.length; ii+=4){
 			if (otherusers[ii+1] != document.getElementById("pseudo").textContent){
-				co.fillStyle = "blue";
+				co.fillStyle = "gold";
 				co.beginPath();
 				co.arc(otherusers[ii+2]*cx+cx, otherusers[ii+3]*cy+cy, cx, 0, Math.PI * 2, true); 
 				co.fill();
