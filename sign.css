@@ -1,0 +1,86 @@
+* {
+     margin:0; padding:0;   
+}
+
+body
+{
+	
+	font-family: 'Noto Serif', serif;
+    background-color: #262626;
+}
+
+h1
+{
+  text-align: center;
+  background-color: red;
+  } 
+
+.form  {
+  display: table;
+     width: 600px;
+     margin: 10px auto;
+     padding-left: 300px;
+     background-color: black;
+    border-radius: 7px;
+}
+
+.header  {
+     height: 85px;
+}
+
+.header h2 {
+     color: #fff;
+     text-align: center;
+     height: 55px;
+     line-height: 55px;
+}
+
+.Login {
+     padding: 0 30px;
+     }
+
+.Login label {
+	color: white;
+}
+
+.Login span.bonhomme  {
+     width: 10%;
+     color: #FDFFBC;
+     margin-right: 5px;
+     
+}
+.Login span.cadenas {
+      width: 10%;
+      color: #FDFFBC;
+      margin-right: 7px;
+}
+
+.text   {
+     font-family: 'Noto serif';
+     color: black;
+     background: #FDFFBC;
+     border-radius: 4px;
+     outline: none;
+     border: none;
+     padding-left: 4px;
+}
+
+.text, .Login span .bonhomme  {
+     margin-left: 8px;
+     line-height: 20px;
+     height: 35px;
+     width: 500px;
+     margin-bottom: 5px;
+}
+
+.button  {
+	display: block;
+    width: 45%;
+    height: 40px;
+    background-color: #318ce7;
+    border-radius: 10px 10px 10px 10px;
+    color: #fff;
+    font-family: 'Noto serif';
+    cursor: pointer;
+	margin : auto;
+}
