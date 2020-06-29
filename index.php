@@ -11,43 +11,67 @@ catch (Exception $e)
 ?>
 
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Login Pac Man Time</title>
-        <meta charset="utf-8" />
-		<link rel="stylesheet" type="text/css" href="style.css">
-		
-    </head>
-    <body>
-	<?php
+<html lang="fr">
+	<head>
+		<meta charset="utf-8">
+		<title>
+			PacMan V2
+		</title>
+		<link rel="stylesheet" type="text/css" href="styles.css">
+	</head>
+	
+<body>
+
+<?php
 	#21 mai tout le systeme de connexion
 		if (isset($_SESSION['pseudo']))
 		{
 			echo '
-			<div id="conteneur">
-				<p id="pseudo">';  echo $_SESSION ['pseudo']; echo '</p>
-				<div>
-					<canvas id="canvas" width="1500" height="900" onload="can()">
-						<p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
-					</canvas>
-					
-				</div>
-				<div>
-					<form action="index.php" method="post">
-							<p>
-							<input type="submit" name="deconexion" value="Deconexion" />
-						</p>
-					</form>
-				</div>
+			<h1> PacMan Time &#128123;&#9203; </h1>
+			<img src="Pacman.jpg" class="image1" alt="Pacman and co">
+			<br>
+			<p> &#127759;Histoire de Pac-Man : Pac-Man est un jeu vidéo créé par Tōru Iwatani pour l’entreprise japonaise Namco, sorti au
+			Japon le 22 mai 1980. Le jeu consiste à déplacer Pac-Man, un personnage ressemble à un diagramme circulaire à l’intérieur d’un
+			labyrinthe, afin de lui faire manger toutes les pac-gommes qui s’y trouvent en évitant d’être touché par des fantômes.</p>
+			<br>
+			<p> Systeme de Jeu &#128377;&#65039; : Pac-Man doit survivre le plus de temps possible dans un labyrinthe hanté par 
+			quatre fantômes.Si Pac-Man mange un fruit alors il peut manger les Fantômes, qui une fois avalé sont éliminés.</p>
+			<br>
+			<p> Comment Jouer &#129300; : Voici le guide pour jouer pour chacun des personnages &#10549;&#65039; </p>
+			<br>
+			<p> Pour Pac-Man : </p>
+				<li id="pacman">
+					Avancer: Z; Gauche : Q ; Droite : D ; Reculer : S.
+				</li>
+				<li id="pacman">
+					Pour avaler les Fantomes : Se diriger vers eux.
+					<p> Pour les Fantômes : </p>
+				<li id="fantomes">
+					Avancer : Utiliser les flèches directionnelles 
+				</li>
+				<li id="fantomes">
+					Pour Manger Pac-Man : Se diriger sur lui.
+				</li>
+				<br>
+			<div>
+				<a href="Jeu.php">Jouer</a>
 			</div>
+			<form action="index.php" method="post">
+				<p>
+					<input type="submit" name="deconexion" value="Deconexion" />
+					</br>
+					<input type="checkbox" name="mobile" id="mobile" selected="unselected" /> <label for="mobile"> Je suis sur mobile </label>
+				</p>
+			</form>
 			';
 			if (isset($_POST['deconexion']))
 			{
-				session_destroy();
-				header("Refresh:0");
 				$set = $bdd->prepare('UPDATE users SET statut = 0 WHERE pseudo=:pseudo');
 				$set->execute(array('pseudo' => $_SESSION['pseudo']));
 				$set->closeCursor();
+				session_destroy();
+				header("Refresh:0");
+				
 			}
 			
 		}
@@ -66,21 +90,18 @@ catch (Exception $e)
 					<input type="submit" value="Valider" />
 				</p>
 			</form>';
-			if (isset($_POST['pseudo'],$_POST['mdp']))
-			{
-				$exist=$bdd->prepare('SELECT * FROM users WHERE pseudo=:pseudo');
-				$exist->execute(array('pseudo' => $_POST['pseudo'],));
-				if (null==$_POST['mdp'] OR null==$_POST['pseudo'])
-				{
-					echo "Veillez à remplir tout les champs" ;
-					$exist->closeCursor();
+			if (isset($_POST['pseudo'],$_POST['mdp'])){
+				
+				$_POST['pseudo']=strtolower($_POST['pseudo']);
+				if (null==$_POST['mdp'] OR null==$_POST['pseudo']){
+					
+					echo "<p>Veillez à remplir tout les champs<p>" ;
 				}
-				elseif (strlen($_POST['pseudo'])>10 OR strlen($_POST['mdp'])>10)
-				{
-					echo "Pseudo ou mot de passe trop long ! (10 charachtères maximums)";
+				elseif (strlen($_POST['pseudo'])>10 OR strlen($_POST['mdp'])>10){
+					
+					echo "<p>Pseudo ou mot de passe trop long ! (10 charachtères maximums)</p>";
 				}
-				else
-				{
+				else{
 					#14 mai codage du systeme d'iscription.
 					if ($_POST['mode']=="inscription")
 					{
@@ -89,15 +110,18 @@ catch (Exception $e)
 						if (!($exist->fetch()))
 						{
 							$exist->closeCursor();
-							$req = $bdd->prepare('INSERT INTO users(pseudo,mdp,statut) VALUES(:pseudo,:mdp,0)');
+							$req = $bdd->prepare('INSERT INTO users(pseudo,mdp,statut,clef,couleur) VALUES(:pseudo,:mdp,0,\'none\',\'none\')');
 							$req->execute(array('pseudo' => $_POST['pseudo'],'mdp' => $_POST['mdp'],));
 							$_SESSION['pseudo']=$_POST['pseudo'];
 							$req->closeCursor();
+							$set = $bdd->prepare('UPDATE users SET statut = 1 WHERE pseudo=:pseudo');
+							$set->execute(array('pseudo' => $_POST['pseudo']));
+							$set->closeCursor();
 							header("Refresh:0");
 						}
 						else
 						{	
-							echo "Le pseudo que vous avez saisi est déjà utilisé !";
+							echo "<p>Le pseudo que vous avez saisi est déjà utilisé !</p>";
 							$exist->closeCursor();
 						}
 					}
@@ -118,15 +142,16 @@ catch (Exception $e)
 								$set->closeCursor();
 								$_SESSION['pseudo']=$_POST['pseudo'];
 								header("Refresh:0");
+								
 							}
 							else {
-								echo 'Statut';
+								echo '<p>Statut</p>';
 								$test->closeCursor();
 							}
 						}
 						else
 						{
-							echo 'Mot de passe ou pseudo introuvable';
+							echo '<p>Mot de passe ou pseudo introuvable</p>';
 						}
 						$req->closeCursor();
 					}
@@ -135,7 +160,5 @@ catch (Exception $e)
 		}
 		
 	?>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<script src="script.js"></script>
-    </body>
-</html>
+	</body>
+	</html>
