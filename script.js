@@ -181,11 +181,10 @@ function pacman(px,py,cx,cy,co){
 	py-=0.5*cx;
 	px-=1.25*cx
 	co.fillStyle = "black";
-	/*oeil gauche du fantôme*/
+	/*oeil du pacman*/
     co.beginPath();
     co.arc(px+25/15*cx, py+2/15*cy, 2/15*cx,0,Math.PI,true);
     co.fill();
-	/*co.fillStyle = "red";*/
 	var d = new Date();
 	var t = d.getTime();
 	if (t%300>150){
@@ -240,19 +239,18 @@ function can() {
 	var i=0;
 	var xpac=0
 	var ypac=0
-	var coeurs=3;
 	var lxyfant= new Array()
-		while (( screenwidth/(resx*ds[2][i])*48 < window.innerWidth ) && ( screenheight/(resy*ds[2][i])*36 < window.innerHeight) &&  (ds[2][i]!=length-1)){
+		while (( screen.width/(resx*ds[2][i])*48 < window.innerWidth ) && ( screen.height/(resy*ds[2][i])*36 < window.innerHeight) &&  (ds[2][i]!=length-1)){
 			i+=1
 		}
 	if (resx<resy){
 		if (i==0){
-			canvas.width=screenheight/(resx*ds[2][i])*36;
+			canvas.width=screen.height/(resx*ds[2][i])*36;
 			canvas.height=screenwidth/(resy*ds[2][i])*48;
 		}
 		else{
-			canvas.width=screenheight/(resx*ds[2][i-1])*36;
-			canvas.height=screenwidth/(resy*ds[2][i-1])*48;
+			canvas.width=screen.height/(resx*ds[2][i-1])*36;
+			canvas.height=screen.width/(resy*ds[2][i-1])*48;
 		}
 	}
 	else {
@@ -261,8 +259,8 @@ function can() {
 			canvas.height=screenheight/(resy*ds[2][i])*36;
 		}
 		else{
-			canvas.width=screenwidth/(resx*ds[2][i-1])*48;
-			canvas.height=screenheight/(resy*ds[2][i-1])*36;
+			canvas.width=screen.width/(resx*ds[2][i-1])*48;
+			canvas.height=screen.height/(resy*ds[2][i-1])*36;
 		}
 	}
 	var cx=canvas.width/48;
@@ -418,31 +416,46 @@ function can() {
 				}
 			}
 			if (at==1){
-				x=cx;
-				y=cy;
+				if (document.getElementById("perso").textContent == 'P') {
+					x=cx;
+					y=cy;
+				}
+				else{
+					x=24*cx;
+					y=17*cy;
+				}
+				var d = new Date();
+				var t = d.getTime();
 				$.post(
 				'positions.php', 
 				{
-					gameover:" ",
+					time: t,
+					coeurenmoins:" ",
 					clef : document.getElementById("clef").textContent
 				},
-				gameover, 
+				delcoeur,
 				'text' 
 				);
-				window.location.reload()
 			}
-		}
+			$.post(
+				'positions.php', 
+				{
+					getcoeur:" ",
+					clef : document.getElementById("clef").textContent
+				},
+				getcoeur, 
+				'text' 
+				);
 			if (coeurs==0){
 				$.post(
 				'positions.php', 
 				{
-					gameover:" ",
+					gameover: " ",
 					clef : document.getElementById("clef").textContent
 				},
-				gameover, 
+				gameoverfunc, 
 				'text' 
 				);
-				window.location.reload()
 			}
 			$.post(
 			'positions.php', 
@@ -457,7 +470,17 @@ function can() {
 			);
 			
 		});
-		function gameover(retour){
+		function getcoeur(retour){
+			coeurs=retour;
+		}
+		function delcoeur(retour){
+			alert(retour);
+		}
+		function gameoverfunc(retour){
+			window.location = "index.php";
+		}
+		document.getElementById('test').textContent=coeurs;
+		function coeurenmoins(retour){
 		}
 		function affichage(retour){
 			otherusers= new Array();
@@ -486,7 +509,6 @@ function can() {
 				lxyfant.push(otherusers[ii+3]*cy+cy);
 			}
 		}
-		
 		window.requestAnimationFrame(function() { draw(x,y,canvas,k,l) });
 
 	}
@@ -496,7 +518,7 @@ function can() {
 var otherusers=new Array();
 var x=document.getElementById("x").textContent;
 var y=document.getElementById("y").textContent;
-
+var coeurs=document.getElementById("y").textContent;
 
 /*
 jQuery(document).ready(function(){

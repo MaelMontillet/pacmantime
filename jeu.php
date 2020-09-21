@@ -2,7 +2,7 @@
 session_start();
 try
 {
-	$bdd = new PDO('mysql:host=localhost;dbname=pacmantime;charset=utf8', 'root', '', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+	$bdd = new PDO('mysql:host=localhost;dbname=pacmantime;charset=utf8', 'root', '', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,PDO::ATTR_PERSISTENT => true));
 }
 catch (Exception $e)
 {
@@ -11,6 +11,7 @@ catch (Exception $e)
 ?>
 
 <!DOCTYPE html>
+
 <html lang="fr">
 	<head>
 		<meta charset="utf-8">
@@ -24,36 +25,36 @@ catch (Exception $e)
 	</h1>	
 	<body id="b">
 	<?php
-	#21 mai tout le systeme de connexion
-		if (isset($_SESSION['gameover'])){
-			unset ($_SESSION['clef']);
-			unset ($_POST['clef']);
-			unset($_POST['jouer']);
-			unset($_POST['couleur']);
-			unset($_SESSION['gameover']);
-			echo'<form action="jeu.php" method="post">
-			<p>
-				<input type="submit" name="retour_site" value="retour au site" />
-			</p>
-		</form>';
-		}
-		elseif ( (isset($_SESSION['pseudo']) && (isset($_POST['jouer'])))){
+		elseif  (isset($_SESSION['pseudo'])){
 			echo '
 			<div id="conteneur">
 				<p id="pseudo" hidden>';  echo $_SESSION ['pseudo']; echo '</p>
 				<p id="clef" hidden>';  echo $_SESSION ['clef']; echo '</p>
-				<p id="test" > </p>
 				<p>';
-				$req = $bdd->prepare('SELECT positionx,positiony,couleur,personnage FROM users WHERE pseudo=:pseudo');
+				$req = $bdd->prepare('SELECT couleur,statut FROM users WHERE pseudo=:pseudo');
 				$req->execute(array('pseudo' => $_SESSION['pseudo']));
 				
 				if ($hidvars = $req->fetch()){
-					echo '<p id="x" hidden>';  echo (int)($hidvars['positionx']); echo '</p>
-					<p id="y" hidden>';  echo (int)($hidvars['positiony']); echo '</p>
-					<p id="couleur" hidden>'; echo  $hidvars['couleur']; echo '</p>
-					<p id="perso" hidden>'; echo $hidvars['personnage']; echo '</p>';
+					/*<p id="x" hidden>';  echo (int)($hidvars['positionx']); echo '</p>
+					<p id="y" hidden>';  echo (int)($hidvars['positiony']); echo '</p>*/
+					echo '<p id="couleur" hidden>'; echo  $hidvars['couleur']; echo '</p>
+						<p id="perso" hidden>'; echo $hidvars['statut']; echo '</p>'
+				}
+				$req = $bdd->prepare('SELECT coeur FROM groupes WHERE pseudo=:pseudo');
+				$req->execute(array('pseudo' => $_SESSION['pseudo']));
+				if ($hidvars = $req->fetch()){
+					echo '<p id="coeur" hidden>'; echo $hidvars['coeur']; echo '</p>';
+				}
+				$req = $bdd->prepare('SELECT positionx,positiony FROM groupes WHERE pseudo=:pseudo');
+				$req->execute(array('pseudo' => $_SESSION['pseudo']));*
+				if ($hidvars = $req->fetch()){
+					echo '<p id="positionx" hidden>'; echo $hidvars['coeur']; echo '</p>';
 				}
 				$req->closeCursor();
+				$req = $bdd->prepare('SELECT couleur,statut FROM users WHERE clef=:clef');
+				$req->execute(array('clef' => $_SESSION ['clef'];));
+				
+				while
 				echo '<div>
 					<canvas id="canvas" onload="can()">
 						<p>Désolé, votre navigateur ne supporte pas Canvas. Mettez-vous à jour</p>
@@ -72,15 +73,11 @@ catch (Exception $e)
 			</div>
 			';	
 		}
-		elseif ( !(isset($_SESSION['pseudo']))) {
-			
-		echo '<p>Merci de vous connecter au service.</p>
-		<form action="jeu.php" method="post">
-			<p>
-				<input type="submit" name="retour_site" value="retour au site" />
-			</p>
-		</form>';
+		else{
+			echo '<script> window.location = "index.php" </script>';
 		}
+		
+		/*
 		else{
 			echo '
 			<form action="jeu.php" method="post">
@@ -119,8 +116,8 @@ catch (Exception $e)
 						}
 					}
 					$req->closeCursor();
-					$req = $bdd->prepare('SELECT couleur FROM users WHERE pseudo=:pseudo');
-					$req->execute(array('pseudo'=> $_SESSION['pseudo']));
+					$req = $bdd->prepare('SELECT couleur,statut FROM users WHERE pseudo=:pseudo');
+					$req->execute(array('pseudo' => $_SESSION['pseudo']));
 					if ($c = $req->fetch()){
 						if ($c['couleur']=='none'){
 							$couleur=$lcouleurs[array_rand($lcouleurs,1)];
@@ -130,11 +127,28 @@ catch (Exception $e)
 							$set->closeCursor();
 						}
 					}
+					$req = $bdd->prepare('SELECT statut FROM users WHERE clef=:clef');
+					$req->execute(array('clef' => $_POST['clef']));
+					$doitjouer=0;
+					while ($test =$req->fetch()){
+						if ($test['statut']==1){
+							$doitjouer=1;
+						}
+					}
+					$req->closeCursor();
+					if ($doitjouer==1){
+						$_SESSION['jouer']='true';
+						header("Refresh:0");
+					}
+					else{
 					$pac=$findpac[array_rand($findpac,1)];
 					echo'<p>';print_r( $findpac); echo $pac;echo'</p>';
 					forEach ($findpac as $nom){
 						if ($nom == $pac){
 							$set = $bdd->prepare('UPDATE users SET personnage= \'P\' WHERE pseudo=:pseudo');
+							$set->execute(array('pseudo' => $nom));
+							$set->closeCursor();
+							$set = $bdd->prepare('UPDATE users SET positionx=1,positiony=1 WHERE pseudo=:pseudo');
 							$set->execute(array('pseudo' => $nom));
 							$set->closeCursor();
 						}
@@ -153,23 +167,21 @@ catch (Exception $e)
 							<input type="submit" name="jouer" value="Jouer" />
 						</p>
 					</form>';
+					if (isset($_POST["jouer"])){
+						$_SESSION['jouer']='true';
+						header("Refresh:0");
+					}
+					}
 					}
 				}
 
 			}
-		}
+		}*/
 		if (isset($_POST['retour_site'])){
-				/*session_destroy();
-				header("Refresh:0");
-				$set = $bdd->prepare('UPDATE users SET statut = 0 WHERE pseudo=:pseudo');
-				$set->execute(array('pseudo' => $_SESSION['pseudo']));
-				$set->closeCursor();*/
-				echo '<script> window.location = "index.php" </script>';
+			echo '<script> window.location = "index.php" </script>';
 		}
-		
-		
 	?>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="jquery.js"></script>
 	<script src="script.js"></script>
 	</body>
 </html>

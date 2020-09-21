@@ -54,7 +54,7 @@ catch (Exception $e)
 				</li>
 				<br>
 			<div>
-				<a href="Jeu.php">Jouer</a>
+				<a href="join_groups.php">Jouer</a>
 			</div>
 			<form action="index.php" method="post">
 				<p>
@@ -66,9 +66,6 @@ catch (Exception $e)
 			';
 			if (isset($_POST['deconexion']))
 			{
-				$set = $bdd->prepare('UPDATE users SET statut = 0 WHERE pseudo=:pseudo');
-				$set->execute(array('pseudo' => $_SESSION['pseudo']));
-				$set->closeCursor();
 				session_destroy();
 				header("Refresh:0");
 				
@@ -77,7 +74,8 @@ catch (Exception $e)
 		}
 		else
 		{
-			echo'
+			echo '<script> window.location = "connexion.php" </script>';
+			/*echo'
 			<form action="index.php" method="post">
 				<p>
 					<input type="text" name="pseudo" />
@@ -114,9 +112,6 @@ catch (Exception $e)
 							$req->execute(array('pseudo' => $_POST['pseudo'],'mdp' => $_POST['mdp'],));
 							$_SESSION['pseudo']=$_POST['pseudo'];
 							$req->closeCursor();
-							$set = $bdd->prepare('UPDATE users SET statut = 1 WHERE pseudo=:pseudo');
-							$set->execute(array('pseudo' => $_POST['pseudo']));
-							$set->closeCursor();
 							header("Refresh:0");
 						}
 						else
@@ -132,22 +127,8 @@ catch (Exception $e)
 						if ($req->fetch())
 						{	
 							$req->closeCursor();
-							$test = $bdd->prepare('SELECT statut FROM users WHERE pseudo=:pseudo');
-							$test->execute(array('pseudo' => $_POST['pseudo']));
-							$statut=$test->fetch();
-							if ($statut['statut']==0){
-								$test->closeCursor();
-								$set = $bdd->prepare('UPDATE users SET statut = 1 WHERE pseudo=:pseudo');
-								$set->execute(array('pseudo' => $_POST['pseudo']));
-								$set->closeCursor();
-								$_SESSION['pseudo']=$_POST['pseudo'];
-								header("Refresh:0");
-								
-							}
-							else {
-								echo '<p>Statut</p>';
-								$test->closeCursor();
-							}
+							$_SESSION['pseudo']=$_POST['pseudo'];
+							header("Refresh:0");
 						}
 						else
 						{
@@ -156,7 +137,7 @@ catch (Exception $e)
 						$req->closeCursor();
 					}
 				}
-			}
+			}*/
 		}
 		
 	?>
